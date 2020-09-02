@@ -204,29 +204,33 @@ public class SimplifyDes{
         ep[7] = ip[4];
 
         //Resultado del primer XOR
-        int[] temp8bit = new int[key1.length];
+        int[] temp8bit = new int[8];
         temp8bit =  XOR(ep, key1);
 
         //Asignacion del primer SBox
-        int[] sbox1 = new int[4]
+        int[] sbox1 = new int[4];
         sbox1[0] = temp8bit[0];
         sbox1[1] = temp8bit[1];
         sbox1[2] = temp8bit[2];
         sbox1[3] = temp8bit[3];
 
         //Asignacion del segundo SBox
-        int[] sbox2 = new int[4]
+        int[] sbox2 = new int[4];
         sbox2[0] = temp8bit[4];
         sbox2[1] = temp8bit[5];
         sbox2[2] = temp8bit[6];
         sbox2[3] = temp8bit[7];
 
         //Sbox results
-        int[] sbox1Result = sBox(sbox1, box1);
-        int[] sbox2Result = sBox(sbox2, box2);
-
-        int[] sboxResult = new int [4]
-        sboxResult = sbox1Result + sbox2Result;
+        int[] sbox1Result = new int[2];
+        sbox1Result = sBox(sbox1, box1);
+        int[] sbox2Result = new int[2];
+        sbox2Result = sBox(sbox2, box2);
+        int[] sboxResult = new int [4];
+        for(int i = 0; i < 2; i++){
+            sboxResult[i] = sbox1Result[i];
+            sboxResult[i + 2] = sbox2Result[i];
+        }
 
         int[] p4 = new int[4];
         p4[0] = sboxResult[1];
@@ -235,14 +239,15 @@ public class SimplifyDes{
         p4[3] = sboxResult[0];
 
         int[] ip4 = new int[4];
-        ip4[0] = ip[3];
-        ip4[1] = ip[2];
-        ip4[2] = ip[1];
-        ip4[4] = ip[0];
+        for(int i = 0; i < 4; i++){
+            ip4[i] = ip[i];     
+        }
 
         //Resultado del segundo XOR
         int[] temp4bit = new int[4];
         temp4bit = XOR(p4, ip4);
+
+        //Falta repetir el proceso
 
         //Asigna el resultado del 
         //cuarto y del segundo XOR 
@@ -256,13 +261,13 @@ public class SimplifyDes{
         temp8bit[7] = temp[3];
 
         //Acomoda el cipher
-        cipher[0] = temp8bit[3]
-        cipher[1] = temp8bit[0]
-        cipher[3] = temp8bit[2]
-        cipher[4] = temp8bit[4]
-        cipher[5] = temp8bit[6]
-        cipher[6] = temp8bit[1]
-        cipher[7] = temp8bit[5]
+        cipher[0] = temp8bit[3];
+        cipher[1] = temp8bit[0];
+        cipher[3] = temp8bit[2];
+        cipher[4] = temp8bit[4];
+        cipher[5] = temp8bit[6];
+        cipher[6] = temp8bit[1];
+        cipher[7] = temp8bit[5];
 
         return cipher;
     }
