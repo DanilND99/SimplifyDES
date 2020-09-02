@@ -20,6 +20,7 @@ public class SimplifyDes{
         System.out.println(Arrays.toString(resultado2));
         return;
     }
+
     public static int[] getKey(int[] key,int offset){
         int[] temp = new int[10];
         temp[0] = key[2];
@@ -79,6 +80,19 @@ public class SimplifyDes{
         result[6] = ls2[4];
         result[7] = ls2[3];
         return result; 
+    }
+
+    public static int[] XOR(int[] arr1, int[] arr2){
+        int[] resultXOR = new int[arr2.length];
+
+        for(int i = 0; i < arr2.length; i++){
+            if (arr1[i] == arr2[i]){
+                resultXOR[i] = 1;
+            }else{
+                resultXOR[i] = 0;
+            }
+        }
+        return resultXOR;
     }
 }
 /*
