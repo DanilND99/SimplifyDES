@@ -1,8 +1,10 @@
 import java.util.Arrays;
+import java.util.Scanner;
+//Daniel Armando Núñez Delgadillo A01561730
+//Cindy Torres Domínguez A01566153
 public class SimplifyDes{
     public static int[][] box1 = new int[4][4];
     public static int[][] box2 = new int[4][4];
-    
     public static void main(String[] args){
         box1[0][0] = 1;
         box1[0][1] = 0;
@@ -36,39 +38,55 @@ public class SimplifyDes{
         box2[3][1] = 1;
         box2[3][2] = 0;
         box2[3][3] = 3;
-
-        int[] llave = new int[10];
-        llave[0] = 1;
-        llave[1] = 1;
-        llave[2] = 0;
-        llave[3] = 1;
-        llave[4] = 0;
-        llave[5] = 1;
-        llave[6] = 0;
-        llave[7] = 0;
-        llave[8] = 1;
-        llave[9] = 1;
+        Scanner reader = new Scanner(System.in);
+        String text;
+        int option;
+        int[] key = new int[10];
         int[] plain = new int[8];
-        plain[0] = 0;
-        plain[1] = 1;
-        plain[2] = 0;
-        plain[3] = 1;
-        plain[4] = 1;
-        plain[5] = 0;
-        plain[6] = 1;
-        plain[7] = 1;
-        int[] resultado = new int[8];
-        int[] resultado2 = new int[8];
-        resultado = getKey(llave, 1);
-        System.out.println("Key 1: " + Arrays.toString(resultado));
-        resultado2 = getKey(llave, 2);
-        System.out.println("Key 2: " + Arrays.toString(resultado2));
+        int[] key1 = new int[8];
+        int[] key2 = new int[8];
         int[] cipher = new int[8];
-        System.out.println("Plano: " + Arrays.toString(plain));
-        cipher = simplifyDES(plain, resultado, resultado2);
-        System.out.println("Cipher: " + Arrays.toString(cipher));
-        plain = simplifyDES(cipher, resultado2, resultado);
-        System.out.println("Plano: " + Arrays.toString(plain));
+        do{
+            System.out.println("Seleccione una opcion\n1. Encriptar\n2. Desencriptar\n0. Salir\n");
+            option = reader.nextInt();
+            text = reader.nextLine();
+            switch(option){
+                case 1:
+                    System.out.println("Introduzca el texto plano de 8-bits:");
+                    text = reader.nextLine();
+                    plain = convertInput(text);
+                    System.out.println("Introduzca la llave de 10-bits:");
+                    text = reader.nextLine();
+                    key = convertInput(text);
+                    key1 = getKey(key, 1);
+                    System.out.println("Key 1: " + Arrays.toString(key1));
+                    key2 = getKey(key, 2);
+                    System.out.println("Key 2: " + Arrays.toString(key2));
+                    System.out.println("Plano: " + Arrays.toString(plain));
+                    cipher = simplifyDES(plain, key1, key2);
+                    System.out.println("Cipher: " + Arrays.toString(cipher));
+                    break;
+                case 2:
+                    System.out.println("Introduzca el texto cifrado de 8-bits:");
+                    text = reader.nextLine();
+                    plain = convertInput(text);
+                    System.out.println("Introduzca la llave de 10-bits:");
+                    text = reader.nextLine();
+                    key = convertInput(text);
+                    key1 = getKey(key, 1);
+                    System.out.println("Key 1: " + Arrays.toString(key1));
+                    key2 = getKey(key, 2);
+                    System.out.println("Key 2: " + Arrays.toString(key2));
+                    System.out.println("Plano: " + Arrays.toString(plain));
+                    cipher = simplifyDES(plain, key2, key1);
+                    System.out.println("Cipher: " + Arrays.toString(cipher));
+                    break;
+                default:
+                    option = 0;
+                    break;
+            }
+            System.out.println("\n\n\n\n\n");
+        }while(option != 0);
         return;
     }
     public static int[] sBox(int[] arr,int[][] box){
@@ -259,5 +277,13 @@ public class SimplifyDes{
         cipher[6] = ip[7];
         cipher[7] = ip[5];
         return cipher;
+    }
+    public static int[] convertInput(String message){
+        int number = message.length();
+        int[] msgArray = new int[number];
+        for(int i = 0; i< number; i++){
+            msgArray[i] = Integer.parseInt(String.valueOf(message.charAt(i)));
+        }
+        return msgArray;
     }
 }
