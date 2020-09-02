@@ -1,7 +1,10 @@
 import java.util.Arrays;
 public class SimplifyDes{
+    public static int[][] box1 = new int[4][4];
+    public static int[][] box2 = new int[4][4];
+    
     public static void main(String[] args){
-        int[][] box1 = new int[4][4];
+        //public int[][] box1 = new int[4][4];
         box1[0][0] = 1;
         box1[0][1] = 0;
         box1[0][2] = 3;
@@ -18,7 +21,6 @@ public class SimplifyDes{
         box1[3][1] = 1;
         box1[3][2] = 3;
         box1[3][3] = 2;
-        int[][] box2 = new int[4][4];
         box2[0][0] = 0;
         box2[0][1] = 1;
         box2[0][2] = 2;
@@ -47,6 +49,16 @@ public class SimplifyDes{
         llave[7] = 0;
         llave[8] = 1;
         llave[9] = 1;
+
+        int[] plain = new int[8];
+        plain[0] = 0;
+        plain[1] = 1;
+        plain[2] = 0;
+        plain[3] = 1;
+        plain[4] = 1;
+        plain[5] = 0;
+        plain[6] = 1;
+        plain[7] = 1;
         /*int[] s = new int[4];
         int[] a = new int[2];
         s[0] = 1;
@@ -59,10 +71,15 @@ public class SimplifyDes{
         int[] resultado = new int[8];
         int[] resultado2 = new int[8];
         resultado = getKey(llave, 1);
-        System.out.println(Arrays.toString(resultado));
+        System.out.println("Key 1: " + Arrays.toString(resultado));
         resultado2 = getKey(llave, 2);
-        System.out.println(Arrays.toString(resultado2));
-        
+        System.out.println("Key 2: " + Arrays.toString(resultado2));
+        int[] cipher = new int[8];
+        System.out.println("Plano: " + Arrays.toString(plain));
+        cipher = simplifyDES(plain, resultado, resultado2);
+        System.out.println("Cipher: " + Arrays.toString(cipher));
+        plain = simplifyDES(cipher, resultado2, resultado);
+        System.out.println("Plano: " + Arrays.toString(plain));
         return;
     }
     public static int[] sBox(int[] arr,int[][] box){
@@ -169,9 +186,9 @@ public class SimplifyDes{
 
         for(int i = 0; i < arr2.length; i++){
             if (arr1[i] == arr2[i]){
-                resultXOR[i] = 1;
-            }else{
                 resultXOR[i] = 0;
+            }else{
+                resultXOR[i] = 1;
             }
         }
         return resultXOR;
@@ -190,7 +207,7 @@ public class SimplifyDes{
         ip[5] = plain[7];
         ip[6] = plain[4];
         ip[7] = plain[6];
-
+        System.out.println("IP: " + Arrays.toString(ip));
         int[] ep = new int [8];
 
         //Asignacion del E/P
@@ -202,10 +219,11 @@ public class SimplifyDes{
         ep[5] = ip[6];
         ep[6] = ip[7];
         ep[7] = ip[4];
-
+        System.out.println("EP: " + Arrays.toString(ep));
         //Resultado del primer XOR
         int[] temp8bit = new int[8];
         temp8bit =  XOR(ep, key1);
+        System.out.println("XOR 1: " + Arrays.toString(temp8bit));
 
         //Asignacion del primer SBox
         int[] sbox1 = new int[4];
@@ -237,7 +255,7 @@ public class SimplifyDes{
         p4[1] = sboxResult[3];
         p4[2] = sboxResult[2];
         p4[3] = sboxResult[0];
-
+        System.out.println("P4: " + Arrays.toString(p4));
         int[] ip4 = new int[4];
         for(int i = 0; i < 4; i++){
             ip4[i] = ip[i];     
@@ -247,49 +265,71 @@ public class SimplifyDes{
         int[] temp4bit = new int[4];
         temp4bit = XOR(p4, ip4);
 
+        int[] sw = new int[8];
+        for(int i = 0;i < 4;i++){
+            sw[i] = ip[i + 4];
+            sw[i + 4] = temp4bit[i];
+        }
+        System.out.println("SW: " + Arrays.toString(sw));
+        ep[0] = temp4bit[3];
+        ep[1] = temp4bit[0];
+        ep[2] = temp4bit[1];
+        ep[3] = temp4bit[2];
+        ep[4] = temp4bit[1];
+        ep[5] = temp4bit[2];
+        ep[6] = temp4bit[3];
+        ep[7] = temp4bit[0];
+        System.out.println("EP2: " + Arrays.toString(ep));
+        temp8bit =  XOR(ep, key2);
+        
+        for(int i = 0;i < 4;i++){
+            sbox1[i] = temp8bit[i];
+            sbox2[i] = temp8bit[i + 4];
+        }
+        sbox1Result = sBox(sbox1, box1);
+        sbox2Result = sBox(sbox2, box2);
+        for(int i = 0; i < 2; i++){
+            sboxResult[i] = sbox1Result[i];
+            sboxResult[i + 2] = sbox2Result[i];
+        }
+        p4[0] = sboxResult[1];
+        p4[1] = sboxResult[3];
+        p4[2] = sboxResult[2];
+        p4[3] = sboxResult[0];
+        System.out.println("P4-2: " + Arrays.toString(p4));
+        for(int i = 0; i < 4; i++){
+            ip4[i] = sw[i];     
+        }
+
+        temp4bit = XOR(p4, ip4);
+
+        for(int i = 0;i < 4;i++){
+            sw[i] = temp4bit[i];
+        }
         //Falta repetir el proceso
 
         //Asigna el resultado del 
         //cuarto y del segundo XOR 
-        temp8bit[0] = temp2[0];
+        /*temp8bit[0] = temp2[0];
         temp8bit[1] = temp2[1];
         temp8bit[2] = temp2[2];
         temp8bit[3] = temp2[3];
         temp8bit[4] = temp[0];
         temp8bit[5] = temp[1];
         temp8bit[6] = temp[2];
-        temp8bit[7] = temp[3];
+        temp8bit[7] = temp[3];*/
 
         //Acomoda el cipher
-        cipher[0] = temp8bit[3];
-        cipher[1] = temp8bit[0];
-        cipher[3] = temp8bit[2];
-        cipher[4] = temp8bit[4];
-        cipher[5] = temp8bit[6];
-        cipher[6] = temp8bit[1];
-        cipher[7] = temp8bit[5];
+        System.out.println("SW: " + Arrays.toString(sw));
+        cipher[0] = sw[3];
+        cipher[1] = sw[0];
+        cipher[2] = sw[2];
+        cipher[3] = sw[4];
+        cipher[4] = sw[6];
+        cipher[5] = sw[1];
+        cipher[6] = sw[7];
+        cipher[7] = sw[5];
 
         return cipher;
     }
 }
-/*
-public byte [4][4] s0 =
-public byte [4][4] s1 =
-
-Bit[8] getKey(Bit[10] key,byte offset){
-    Bit[10] adas = {key[1],key[3],key[9]...}
-    return key;
-}
-Bit[8] S-DES(Bit[8] plain, key1, key2){
-    return msg;
-}
-Bit[] xOR(Bit[] arr1, Bit[] arr2){
-    Hacer XOR de arr1 con arr2
-    return arr3;
-}
-Bit[2] Sbox(Bit[4] arr,byte[][] s){
-    hacer lo de las cajitas
-    return newArr;
-}
-*/
-//Cindy7td
