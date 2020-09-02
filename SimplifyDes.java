@@ -1,8 +1,43 @@
 import java.util.Arrays;
 public class SimplifyDes{
     public static void main(String[] args){
+        int[][] box1 = new int[4][4];
+        box1[0][0] = 1;
+        box1[0][1] = 0;
+        box1[0][2] = 3;
+        box1[0][3] = 2;
+        box1[1][0] = 3;
+        box1[1][1] = 2;
+        box1[1][2] = 1;
+        box1[1][3] = 0;
+        box1[2][0] = 0;
+        box1[2][1] = 2;
+        box1[2][2] = 1;
+        box1[2][3] = 3;
+        box1[3][0] = 1;
+        box1[3][1] = 1;
+        box1[3][2] = 3;
+        box1[3][3] = 2;
+        int[][] box2 = new int[4][4];
+        box2[0][0] = 0;
+        box2[0][1] = 1;
+        box2[0][2] = 2;
+        box2[0][3] = 3;
+        box2[1][0] = 2;
+        box2[1][1] = 0;
+        box2[1][2] = 1;
+        box2[1][3] = 3;
+        box2[2][0] = 3;
+        box2[2][1] = 0;
+        box2[2][2] = 1;
+        box2[2][3] = 0;
+        box2[3][0] = 2;
+        box2[3][1] = 1;
+        box2[3][2] = 0;
+        box2[3][3] = 3;
+
         int[] llave = new int[10];
-        llave[0] = 2;
+        llave[0] = 1;
         llave[1] = 1;
         llave[2] = 0;
         llave[3] = 1;
@@ -12,15 +47,75 @@ public class SimplifyDes{
         llave[7] = 0;
         llave[8] = 1;
         llave[9] = 1;
-        int[] resultado = new int[8];
+        int[] s = new int[4];
+        int[] a = new int[2];
+        s[0] = 1;
+        s[1] = 1;
+        s[2] = 0;
+        s[3] = 0;
+        a = sBox(s,box2);
+        System.out.println(Arrays.toString(a));
+        /*int[] resultado = new int[8];
         int[] resultado2 = new int[8];
         resultado = getKey(llave, 1);
         System.out.println(Arrays.toString(resultado));
         resultado2 = getKey(llave, 2);
         System.out.println(Arrays.toString(resultado2));
+        */
         return;
     }
-
+    public static int[] sBox(int[] arr,int[][] box){
+        int x, y, res;
+        if(arr[1] == 1){
+            if(arr[2] == 1){
+                x = 3;
+            }else{
+                x = 2;
+            }
+        }else{
+            if(arr[2] == 1){
+                x = 1;
+            }else{
+                x = 0;
+            }
+        }
+        if(arr[0] == 1){
+            if(arr[3] == 1){
+                y = 3;
+            }else{
+                y = 2;
+            }
+        }else{
+            if(arr[3] == 1){
+                y = 1;
+            }else{
+                y = 0;
+            }
+        }
+        res = box[y][x];
+        int[] result = new int[2];
+        switch (res) {
+            case 0:
+                result[0] = 0;
+                result[1] = 0;
+                break;
+            case 1:
+                result[0] = 0;
+                result[1] = 1;
+                break;
+            case 2:
+                result[0] = 1;
+                result[1] = 0;
+                break;
+            case 3:
+                result[0] = 1;
+                result[1] = 1;
+                break;
+            default:
+                break;
+        }
+        return result;
+    }
     public static int[] getKey(int[] key,int offset){
         int[] temp = new int[10];
         temp[0] = key[2];
@@ -48,19 +143,24 @@ public class SimplifyDes{
             }
         }
         System.out.println(Arrays.toString(ls2));
+
+        int[] save1 = new int[5];
+        int[] save2 = new int[5];
+        save1 = ls1;
+        save2 = ls2;
+        System.out.println(Arrays.toString(save2));
+
+
         
         if(offset != 1){
             for (int i = 0;i < 5;i++){
-                System.out.println(ls2[i]);
                 if(i + offset >= 5){
-                    ls1[i] = ls1[i + offset - 5];
-                    ls2[i] = ls2[i + offset - 5];
+                    ls1[i] = save1[i + offset - 5];
+                    ls2[i] = save2[i + offset - 5];
                 }else{
-                    ls1[i] = ls1[i + offset];
-                    ls2[i] = ls2[i + offset];
+                    ls1[i] = save1[i + offset];
+                    ls2[i] = save2[i + offset];
                 }
-                
-                System.out.println(ls2[i]);
             }
             System.out.println(Arrays.toString(ls2));
         }
