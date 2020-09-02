@@ -189,33 +189,92 @@ public class SimplifyDes{
         }
         return resultXOR;
     }
-
-    public static int[] simplifyDES(int[] plain){
+    public static int[] simplifyDES(int[] plain, int[] key1, int[] key2){
         int[] cipher = new int[8];
-        int[] temp = new int[8];
-        int[] key = getKey(key1, offset);
+        int[] ip = new int[8];
 
-        temp[0] = plain[1];
-        temp[1] = plain[5];
-        temp[2] = plain[2];
-        temp[3] = plain[0];
-        temp[4] = plain[3];
-        temp[5] = plain[7];
-        temp[6] = plain[4];
-        temp[7] = plain[6];
+        //Asignacion del IP
+        ip[0] = plain[1];
+        ip[1] = plain[5];
+        ip[2] = plain[2];
+        ip[3] = plain[0];
+        ip[4] = plain[3];
+        ip[5] = plain[7];
+        ip[6] = plain[4];
+        ip[7] = plain[6];
 
         int[] ep = new int [8];
 
-        ep[0] = temp[7];
-        ep[1] = temp[4];
-        ep[2] = temp[5];
-        ep[3] = temp[6];
-        ep[4] = temp[5];
-        ep[5] = temp[6];
-        ep[6] = temp[7];
-        ep[7] = temp[4];
+        //Asignacion del E/P
+        ep[0] = ip[7];
+        ep[1] = ip[4];
+        ep[2] = ip[5];
+        ep[3] = ip[6];
+        ep[4] = ip[5];
+        ep[5] = ip[6];
+        ep[6] = ip[7];
+        ep[7] = ip[4];
 
-        XOR(ep, key);
+        //Resultado del primer XOR
+        int[] temp8bit = new int[key1.length];
+        temp8bit =  XOR(ep, key1);
+
+        //Asignacion del primer SBox
+        int[] sbox1 = new int[4]
+        sbox1[0] = temp8bit[0];
+        sbox1[1] = temp8bit[1];
+        sbox1[2] = temp8bit[2];
+        sbox1[3] = temp8bit[3];
+
+        //Asignacion del segundo SBox
+        int[] sbox2 = new int[4]
+        sbox2[0] = temp8bit[4];
+        sbox2[1] = temp8bit[5];
+        sbox2[2] = temp8bit[6];
+        sbox2[3] = temp8bit[7];
+
+        //Sbox results
+        int[] sbox1Result = sBox(sbox1, box1);
+        int[] sbox2Result = sBox(sbox2, box2);
+
+        int[] sboxResult = new int [4]
+        sboxResult = sbox1Result + sbox2Result;
+
+        int[] p4 = new int[4];
+        p4[0] = sboxResult[1];
+        p4[1] = sboxResult[3];
+        p4[2] = sboxResult[2];
+        p4[3] = sboxResult[0];
+
+        int[] ip4 = new int[4];
+        ip4[0] = ip[3];
+        ip4[1] = ip[2];
+        ip4[2] = ip[1];
+        ip4[4] = ip[0];
+
+        //Resultado del segundo XOR
+        int[] temp4bit = new int[4];
+        temp4bit = XOR(p4, ip4);
+
+        //Asigna el resultado del 
+        //cuarto y del segundo XOR 
+        temp8bit[0] = temp2[0];
+        temp8bit[1] = temp2[1];
+        temp8bit[2] = temp2[2];
+        temp8bit[3] = temp2[3];
+        temp8bit[4] = temp[0];
+        temp8bit[5] = temp[1];
+        temp8bit[6] = temp[2];
+        temp8bit[7] = temp[3];
+
+        //Acomoda el cipher
+        cipher[0] = temp8bit[3]
+        cipher[1] = temp8bit[0]
+        cipher[3] = temp8bit[2]
+        cipher[4] = temp8bit[4]
+        cipher[5] = temp8bit[6]
+        cipher[6] = temp8bit[1]
+        cipher[7] = temp8bit[5]
 
         return cipher;
     }
