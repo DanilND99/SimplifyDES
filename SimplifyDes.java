@@ -6,6 +6,7 @@ public class SimplifyDes{
     public static int[][] box1 = new int[4][4];
     public static int[][] box2 = new int[4][4];
     public static void main(String[] args){
+        //public int[][] box1 = new int[4][4];
         box1[0][0] = 1;
         box1[0][1] = 0;
         box1[0][2] = 3;
@@ -189,6 +190,7 @@ public class SimplifyDes{
     }
     public static int[] XOR(int[] arr1, int[] arr2){
         int[] resultXOR = new int[arr2.length];
+
         for(int i = 0; i < arr2.length; i++){
             if (arr1[i] == arr2[i]){
                 resultXOR[i] = 0;
