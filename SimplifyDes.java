@@ -143,11 +143,14 @@ public class SimplifyDes{
             }
         }
         System.out.println(Arrays.toString(ls2));
+
         int[] save1 = new int[5];
         int[] save2 = new int[5];
         save1 = ls1;
         save2 = ls2;
         System.out.println(Arrays.toString(save2));
+
+
         
         if(offset != 1){
             for (int i = 0;i < 5;i++){
@@ -185,6 +188,36 @@ public class SimplifyDes{
             }
         }
         return resultXOR;
+    }
+
+    public static int[] simplifyDES(int[] plain){
+        int[] cipher = new int[8];
+        int[] temp = new int[8];
+        int[] key = getKey(key1, offset);
+
+        temp[0] = plain[1];
+        temp[1] = plain[5];
+        temp[2] = plain[2];
+        temp[3] = plain[0];
+        temp[4] = plain[3];
+        temp[5] = plain[7];
+        temp[6] = plain[4];
+        temp[7] = plain[6];
+
+        int[] ep = new int [8];
+
+        ep[0] = temp[7];
+        ep[1] = temp[4];
+        ep[2] = temp[5];
+        ep[3] = temp[6];
+        ep[4] = temp[5];
+        ep[5] = temp[6];
+        ep[6] = temp[7];
+        ep[7] = temp[4];
+
+        XOR(ep, key);
+
+        return cipher;
     }
 }
 /*
