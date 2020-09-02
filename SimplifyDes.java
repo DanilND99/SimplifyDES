@@ -189,31 +189,29 @@ public class SimplifyDes{
         }
         return resultXOR;
     }
-
-    public static int[] simplifyDES(int[] plain){
+    public static int[] simplifyDES(int[] plain, int[] key1, int[] key2){
         int[] cipher = new int[8];
-        int[] temp = new int[8];
-        int[] key = getKey(key1, offset);
+        int[] ip = new int[8];
 
-        temp[0] = plain[1];
-        temp[1] = plain[5];
-        temp[2] = plain[2];
-        temp[3] = plain[0];
-        temp[4] = plain[3];
-        temp[5] = plain[7];
-        temp[6] = plain[4];
-        temp[7] = plain[6];
+        ip[0] = plain[1];
+        ip[1] = plain[5];
+        ip[2] = plain[2];
+        ip[3] = plain[0];
+        ip[4] = plain[3];
+        ip[5] = plain[7];
+        ip[6] = plain[4];
+        ip[7] = plain[6];
 
         int[] ep = new int [8];
 
-        ep[0] = temp[7];
-        ep[1] = temp[4];
-        ep[2] = temp[5];
-        ep[3] = temp[6];
-        ep[4] = temp[5];
-        ep[5] = temp[6];
-        ep[6] = temp[7];
-        ep[7] = temp[4];
+        ep[0] = ip[7];
+        ep[1] = ip[4];
+        ep[2] = ip[5];
+        ep[3] = ip[6];
+        ep[4] = ip[5];
+        ep[5] = ip[6];
+        ep[6] = ip[7];
+        ep[7] = ip[4];
 
         XOR(ep, key);
 
