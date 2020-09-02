@@ -47,7 +47,7 @@ public class SimplifyDes{
         llave[7] = 0;
         llave[8] = 1;
         llave[9] = 1;
-        int[] s = new int[4];
+        /*int[] s = new int[4];
         int[] a = new int[2];
         s[0] = 1;
         s[1] = 1;
@@ -55,13 +55,14 @@ public class SimplifyDes{
         s[3] = 0;
         a = sBox(s,box2);
         System.out.println(Arrays.toString(a));
-        /*int[] resultado = new int[8];
+        */
+        int[] resultado = new int[8];
         int[] resultado2 = new int[8];
         resultado = getKey(llave, 1);
         System.out.println(Arrays.toString(resultado));
         resultado2 = getKey(llave, 2);
         System.out.println(Arrays.toString(resultado2));
-        */
+        
         return;
     }
     public static int[] sBox(int[] arr,int[][] box){
@@ -131,40 +132,26 @@ public class SimplifyDes{
         int[] ls1 = new int[5];
         int[] ls2 = new int[5];
         for (int i = 0;i < 5;i++){
-            if(i + 1 >= 5){
-                ls1[i] = temp[i - 4];
-            }else{
-                ls1[i] = temp[i + 1];
-            }
-            if(i + 6 >= 10){
-                ls2[i] = temp[i + 1];
-            }else{
-                ls2[i] = temp[i + 6];
-            }
+            ls1[i] = temp[i];
+            ls2[i] = temp[i + 5];
         }
-        System.out.println(Arrays.toString(ls2));
-
-        int[] save1 = new int[5];
-        int[] save2 = new int[5];
-        save1 = ls1;
-        save2 = ls2;
-        System.out.println(Arrays.toString(save2));
-
-
-        
-        if(offset != 1){
+        for(int j = 1;j <= offset;j++){
+            int[] save1 = new int[5];
+            int[] save2 = new int[5];
+            for(int i = 0; i < 5; i++){
+                save1[i] = ls1[i];
+                save2[i] = ls2[i];
+            }
             for (int i = 0;i < 5;i++){
-                if(i + offset >= 5){
-                    ls1[i] = save1[i + offset - 5];
-                    ls2[i] = save2[i + offset - 5];
+                if(i + j >= 5){
+                    ls1[i] = save1[i + j - 5];
+                    ls2[i] = save2[i + j - 5];
                 }else{
-                    ls1[i] = save1[i + offset];
-                    ls2[i] = save2[i + offset];
+                    ls1[i] = save1[i + j];
+                    ls2[i] = save2[i + j];
                 }
             }
-            System.out.println(Arrays.toString(ls2));
         }
-        
         int[] result = new int[8];
         result[0] = ls2[0];
         result[1] = ls1[2];
@@ -192,6 +179,7 @@ public class SimplifyDes{
     public static int[] simplifyDES(int[] plain, int[] key1, int[] key2){
         int[] cipher = new int[8];
         int[] ip = new int[8];
+
 
         //Asignacion del IP
         ip[0] = plain[1];
