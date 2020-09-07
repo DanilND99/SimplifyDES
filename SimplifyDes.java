@@ -1,5 +1,8 @@
 import java.util.Arrays;
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.*;
 //Daniel Armando Núñez Delgadillo A01561730
 //Cindy Torres Domínguez A01566153
 public class SimplifyDes{
@@ -18,7 +21,7 @@ public class SimplifyDes{
         box1[2][1] = 2;
         box1[2][2] = 1;
         box1[2][3] = 3;
-        box1[3][0] = 1;
+        box1[3][0] = 3;
         box1[3][1] = 1;
         box1[3][2] = 3;
         box1[3][3] = 2;
@@ -47,7 +50,7 @@ public class SimplifyDes{
         int[] key2 = new int[8];
         int[] cipher = new int[8];
         do{
-            System.out.println("Seleccione una opcion\n1. Encriptar\n2. Desencriptar\n0. Salir\n");
+            System.out.println("Seleccione una opcion\n1. Encriptar\n2. Desencriptar\n3. Fuerza Bruta\n0. Salir\n");
             option = reader.nextInt();
             text = reader.nextLine();
             switch(option){
@@ -62,8 +65,8 @@ public class SimplifyDes{
                     System.out.println("Key 1: " + Arrays.toString(key1));
                     key2 = getKey(key, 2);
                     System.out.println("Key 2: " + Arrays.toString(key2));
-                    System.out.println("Plano: " + Arrays.toString(plain));
-                    cipher = simplifyDES(plain, key1, key2);
+                    System.out.println("Plain: " + Arrays.toString(plain));
+                    cipher = simplifyDES(plain, key1, key2, false);
                     System.out.println("Cipher: " + Arrays.toString(cipher));
                     break;
                 case 2:
@@ -77,16 +80,41 @@ public class SimplifyDes{
                     System.out.println("Key 1: " + Arrays.toString(key1));
                     key2 = getKey(key, 2);
                     System.out.println("Key 2: " + Arrays.toString(key2));
-                    System.out.println("Plano: " + Arrays.toString(plain));
-                    cipher = simplifyDES(plain, key2, key1);
-                    System.out.println("Cipher: " + Arrays.toString(cipher));
+                    System.out.println("Cipher: " + Arrays.toString(plain));
+                    cipher = simplifyDES(plain, key2, key1, false);
+                    System.out.println("Plain: " + Arrays.toString(cipher));
+                    break;
+                case 3:
+                    System.out.println("Introduce el nombre del archivo a revisar");
+                    text = reader.nextLine();
+                    try {
+                        File myObj = new File(text);
+                        Scanner myReader = new Scanner(myObj);
+                        for(int i = 0;i < key.length;i++){
+                            key[i] = 0;
+                        }
+                        while (myReader.hasNextLine()) {
+                            String data = myReader.nextLine();
+                            String[] pairs = new String[2];
+                            pairs = data.split(",");
+                            plain = convertInput(pairs[0]);
+                            cipher = convertInput(pairs[1]);
+                            key = fuerzaBruta(plain, cipher, key);  
+                        }
+                        myReader.close();
+                        System.out.println("Your Key: " + Arrays.toString(key));
+                    } catch (FileNotFoundException e) {
+                        System.out.println("An error occurred.");
+                        e.printStackTrace();
+                    }
                     break;
                 default:
                     option = 0;
                     break;
             }
-            System.out.println("\n\n\n\n\n");
+            System.out.println("\n\n");
         }while(option != 0);
+        reader.close();
         return;
     }
     public static int[] sBox(int[] arr,int[][] box){
@@ -199,7 +227,7 @@ public class SimplifyDes{
         }
         return resultXOR;
     }
-    public static int[] simplifyDES(int[] plain, int[] key1, int[] key2){
+    public static int[] simplifyDES(int[] plain, int[] key1, int[] key2,boolean brute){
         int[] cipher = new int[8];
         int[] ip = new int[8];
         int[] ep = new int [8];
@@ -220,7 +248,9 @@ public class SimplifyDes{
         ip[5] = plain[7];
         ip[6] = plain[4];
         ip[7] = plain[6];
-        System.out.println("IP: " + Arrays.toString(ip));
+        if(!brute){
+            System.out.println("IP: " + Arrays.toString(ip));
+        }
         for(int i = 1;i <= 2;i++){
             ep[0] = ip[7];
             ep[1] = ip[4];
@@ -230,12 +260,19 @@ public class SimplifyDes{
             ep[5] = ip[6];
             ep[6] = ip[7];
             ep[7] = ip[4];
-            System.out.println("EP: " + Arrays.toString(ep));
+            if(!brute){
+                System.out.println("EP: " + Arrays.toString(ep));
+            }
             if(i == 1){
                 temp8bit =  XOR(ep, key1);
-                System.out.println("XOR 1: " + Arrays.toString(temp8bit));
+                if(!brute){
+                    System.out.println("XOR 1: " + Arrays.toString(temp8bit));
+                }
             }else{
                 temp8bit =  XOR(ep, key2);
+                if(!brute){
+                    System.out.println("XOR 2: " + Arrays.toString(temp8bit));
+                }
             }
             for(int a = 0;a < 4;a++){
                 sbox1[a] = temp8bit[a];
@@ -251,7 +288,9 @@ public class SimplifyDes{
             p4[1] = sboxResult[3];
             p4[2] = sboxResult[2];
             p4[3] = sboxResult[0];
-            System.out.println("P4: " + Arrays.toString(p4));
+            if(!brute){
+                System.out.println("P4: " + Arrays.toString(p4));
+            }
             for(int a = 0; a < 4; a++){
                 ip4[a] = ip[a];     
             }
@@ -268,7 +307,9 @@ public class SimplifyDes{
             }
             
         }
-        System.out.println("SW: " + Arrays.toString(ip));
+        if(!brute){
+            System.out.println("SW: " + Arrays.toString(ip));
+        }
         cipher[0] = ip[3];
         cipher[1] = ip[0];
         cipher[2] = ip[2];
@@ -287,26 +328,37 @@ public class SimplifyDes{
         }
         return msgArray;
     }
+    public static int[] arrayPlus1(int[] arr){
+        int length = arr.length;
+        int add = 1;
+        for(int i = length - 1;i >= 0;i--){
+            if(add == 0){
+                break;
+            }
+            if(arr[i]  == 0){
+                arr[i] = 1;
+                add = 0;
+            }else{
+                arr[i] = 0;
+            }
+        }
+        return arr;
+    }
+    public static int[] fuerzaBruta(int[] plain, int[] cipher, int[] key){
+        int[] potentialCipher = new int[8];
+        int[] key1 = new int[8];
+        int[] key2 = new int[8];
+        boolean flag = true;
+        do{
+            key1 = getKey(key, 1);
+            key2 = getKey(key, 2);
+            potentialCipher = simplifyDES(plain, key1, key2, true);
+            if(Arrays.toString(potentialCipher).equals(Arrays.toString(cipher))){
+                flag = false;
+            }else{
+                key = arrayPlus1(key);
+            }
+        }while(flag);
+        return key;
+    }
 }
-
-/*
-public static void main(String[] args) {  
-    try {
-      File myObj = new File("Pairs1001100100.txt");
-      Scanner myReader = new Scanner(myObj);
-      String originalKey;  
-      while (myReader.hasNextLine()) {
-        String data = myReader.nextLine();
-        String[] pairs = new String[2];
-        pairs = data.split(",");
-        originalKey = getOriginal(pairs[0],pairs[1]);
-        //LO QUE SE TENGA QUE HACER
-      }
-      myReader.close();
-      System.out.println(originalKey);
-    } catch (FileNotFoundException e) {
-      System.out.println("An error occurred.");
-      e.printStackTrace();
-    } 
-  }  
-*/
