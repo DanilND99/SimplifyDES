@@ -104,7 +104,7 @@ public class SimplifyDes{
                         myReader.close();
                         System.out.println("Your Key: " + Arrays.toString(key));
                     } catch (FileNotFoundException e) {
-                        System.out.println("An error occurred.");
+                        System.out.println("Error 404: File not found.");
                         e.printStackTrace();
                     }
                     break;

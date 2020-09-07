@@ -1,0 +1,5 @@
+Los archivos .txt para la fuerza bruta se deben de encontrar en la misma carpeta.
+Correr el programa desde la carpeta correcta.
+
+Daniel Armando Núñez Delgadillo
+Cindy Torres Domínguez
