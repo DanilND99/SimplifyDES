@@ -1,5 +1,8 @@
 import java.util.Arrays;
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.*;
 //Daniel Armando Núñez Delgadillo A01561730
 //Cindy Torres Domínguez A01566153
 public class SimplifyDes{
@@ -18,10 +21,11 @@ public class SimplifyDes{
         box1[2][1] = 2;
         box1[2][2] = 1;
         box1[2][3] = 3;
-        box1[3][0] = 1;
+        box1[3][0] = 3;
         box1[3][1] = 1;
         box1[3][2] = 3;
         box1[3][3] = 2;
+
         box2[0][0] = 0;
         box2[0][1] = 1;
         box2[0][2] = 2;
@@ -47,7 +51,7 @@ public class SimplifyDes{
         int[] key2 = new int[8];
         int[] cipher = new int[8];
         do{
-            System.out.println("Seleccione una opcion\n1. Encriptar\n2. Desencriptar\n0. Salir\n");
+            System.out.println("Seleccione una opcion\n1. Encriptar\n2. Desencriptar\n3. Fuerza Bruta\n0. Salir\n");
             option = reader.nextInt();
             text = reader.nextLine();
             switch(option){
@@ -62,8 +66,8 @@ public class SimplifyDes{
                     System.out.println("Key 1: " + Arrays.toString(key1));
                     key2 = getKey(key, 2);
                     System.out.println("Key 2: " + Arrays.toString(key2));
-                    System.out.println("Plano: " + Arrays.toString(plain));
-                    cipher = simplifyDES(plain, key1, key2);
+                    System.out.println("Plain: " + Arrays.toString(plain));
+                    cipher = simplifyDES(plain, key1, key2, false);
                     System.out.println("Cipher: " + Arrays.toString(cipher));
                     break;
                 case 2:
@@ -77,37 +81,39 @@ public class SimplifyDes{
                     System.out.println("Key 1: " + Arrays.toString(key1));
                     key2 = getKey(key, 2);
                     System.out.println("Key 2: " + Arrays.toString(key2));
-                    System.out.println("Plano: " + Arrays.toString(plain));
-                    cipher = simplifyDES(plain, key2, key1);
-                    System.out.println("Cipher: " + Arrays.toString(cipher));
+                    System.out.println("Cipher: " + Arrays.toString(plain));
+                    cipher = simplifyDES(plain, key2, key1, false);
+                    System.out.println("Plain: " + Arrays.toString(cipher));
                     break;
                 case 3:
+                    System.out.println("Introduce el nombre del archivo a revisar");
+                    text = reader.nextLine();
                     try {
-                        File myObj = new File("Pairs1001100100.txt");
+                        File myObj = new File(text);
                         Scanner myReader = new Scanner(myObj);
-                        String originalKey;  
+                        for(int i = 0;i < key.length;i++){
+                            key[i] = 0;
+                        }
                         while (myReader.hasNextLine()) {
-                        String data = myReader.nextLine();
-                        String[] pairs = new String[2];
-                        pairs = data.split(",");
-                        originalKey = getOriginal(pairs[0],pairs[1]);
-                        
-                        plain = convertInput(pairs[0]);
-                        cipher = convertInput(pairs[1]);
-                
-                        //LO QUE SE TENGA QUE HACER
+                            String data = myReader.nextLine();
+                            String[] pairs = new String[2];
+                            pairs = data.split(",");
+                            plain = convertInput(pairs[0]);
+                            cipher = convertInput(pairs[1]);
+                            key = fuerzaBruta(plain, cipher, key);  
                         }
                         myReader.close();
-                        System.out.println(originalKey);
+                        System.out.println("Your Key: " + Arrays.toString(key));
                     } catch (FileNotFoundException e) {
                         System.out.println("An error occurred.");
                         e.printStackTrace();
                     }
+                    break;
                 default:
                     option = 0;
                     break;
             }
-            System.out.println("\n\n\n\n\n");
+            System.out.println("\n\n");
         }while(option != 0);
         reader.close();
         return;
@@ -222,7 +228,7 @@ public class SimplifyDes{
         }
         return resultXOR;
     }
-    public static int[] simplifyDES(int[] plain, int[] key1, int[] key2){
+    public static int[] simplifyDES(int[] plain, int[] key1, int[] key2,boolean brute){
         int[] cipher = new int[8];
         int[] ip = new int[8];
         int[] ep = new int [8];
@@ -243,7 +249,9 @@ public class SimplifyDes{
         ip[5] = plain[7];
         ip[6] = plain[4];
         ip[7] = plain[6];
-        //System.out.println("IP: " + Arrays.toString(ip));
+        if(!brute){
+            System.out.println("IP: " + Arrays.toString(ip));
+        }
         for(int i = 1;i <= 2;i++){
             ep[0] = ip[7];
             ep[1] = ip[4];
@@ -253,12 +261,19 @@ public class SimplifyDes{
             ep[5] = ip[6];
             ep[6] = ip[7];
             ep[7] = ip[4];
-            //System.out.println("EP: " + Arrays.toString(ep));
+            if(!brute){
+                System.out.println("EP: " + Arrays.toString(ep));
+            }
             if(i == 1){
                 temp8bit =  XOR(ep, key1);
-                //System.out.println("XOR 1: " + Arrays.toString(temp8bit));
+                if(!brute){
+                    System.out.println("XOR 1: " + Arrays.toString(temp8bit));
+                }
             }else{
                 temp8bit =  XOR(ep, key2);
+                if(!brute){
+                    System.out.println("XOR 2: " + Arrays.toString(temp8bit));
+                }
             }
             for(int a = 0;a < 4;a++){
                 sbox1[a] = temp8bit[a];
@@ -274,7 +289,9 @@ public class SimplifyDes{
             p4[1] = sboxResult[3];
             p4[2] = sboxResult[2];
             p4[3] = sboxResult[0];
-            //System.out.println("P4: " + Arrays.toString(p4));
+            if(!brute){
+                System.out.println("P4: " + Arrays.toString(p4));
+            }
             for(int a = 0; a < 4; a++){
                 ip4[a] = ip[a];     
             }
@@ -291,7 +308,9 @@ public class SimplifyDes{
             }
             
         }
-        System.out.println("SW: " + Arrays.toString(ip));
+        if(!brute){
+            System.out.println("SW: " + Arrays.toString(ip));
+        }
         cipher[0] = ip[3];
         cipher[1] = ip[0];
         cipher[2] = ip[2];
@@ -310,92 +329,37 @@ public class SimplifyDes{
         }
         return msgArray;
     }
-
-    public int[] bruteForce(int[] plain, int[] cipher){
-        int[] ip = new int[8];
-        int[] ip2 = new int[8];
-        int[] ep = new int [8];
-        int[] ep2 = new int [8];
-        int[] plain4 = new int[4];
-        int[] cipher4 = new int[4];
-        int[] p4 = new int[4];
-        //Para el XOR de cipher[0-3] con el plain[4-7]
-        int[] temp4bit = new int[4];
-        //Plain es reacomodado
-        ip[0] = plain[1];
-        ip[1] = plain[5];
-        ip[2] = plain[2];
-        ip[3] = plain[0];
-        ip[4] = plain[3];
-        ip[5] = plain[7];
-        ip[6] = plain[4];
-        ip[7] = plain[6];
-        //Se asignan IP[4-7] al EP
-        ep[0] = ip[7];
-        ep[1] = ip[4];
-        ep[2] = ip[5];
-        ep[3] = ip[6];
-        ep[4] = ip[5];
-        ep[5] = ip[6];
-        ep[6] = ip[7];
-        ep[7] = ip[4];
-
-        //Cipher es reacomodado
-        ip2[0] = cipher[3];
-        ip2[1] = cipher[0];
-        ip2[2] = cipher[2];
-        ip2[3] = cipher[4];
-        ip2[4] = cipher[6];
-        ip2[5] = cipher[1];
-        ip2[6] = cipher[7];
-        ip2[7] = cipher[5];
-        //Plain4 se refiere a los ultimos 4 bits del IP
-        plain4[0] = ip[4];
-        plain4[1] = ip[5];
-        plain4[2] = ip[6];
-        plain4[3] = ip[7];
-        //Cipher4 se refiere a los primeros 4 bits del IP2
-        cipher4[0] = ip2[0];
-        cipher4[1] = ip2[1];
-        cipher4[2] = ip2[2];
-        cipher4[3] = ip2[3];
-
-        p4_2 = XOR(cipher4, plain4);
-        //Se divide la mitad y la mitad para los Sbox invertidos
-
-        //inverseSbox();
-
-        //Se asignan IP2[4-7] al EP2
-        ep2[0] = ip2[7];
-        ep2[1] = ip2[4];
-        ep2[2] = ip2[5];
-        ep2[3] = ip2[6];
-        ep2[4] = ip2[5];
-        ep2[5] = ip2[6];
-        ep2[6] = ip2[7];
-        ep2[7] = ip2[4];
-
-
-        //Agarra los valores de las llaves y los asigna a la llave original
-        //Usa las variables globales de key, key1 y key2.
-        key[0] = key1[0];
-        key[1] = key2[5];
-        key[2] = key1[5];
-        key[3] = key1[3];
-        key[4] = key2[3];
-        key[5] = key1[7];
-        key[6] = key1[1];
-        key[7] = key1[4];
-        key[8] = key1[2];
-        key[9] = key1[6];
+    public static int[] arrayPlus1(int[] arr){
+        int length = arr.length;
+        int add = 1;
+        for(int i = length - 1;i >= 0;i--){
+            if(add == 0){
+                break;
+            }
+            if(arr[i]  == 0){
+                arr[i] = 1;
+                add = 0;
+            }else{
+                arr[i] = 0;
+            }
+        }
+        return arr;
+    }
+    public static int[] fuerzaBruta(int[] plain, int[] cipher, int[] key){
+        int[] potentialCipher = new int[8];
+        int[] key1 = new int[8];
+        int[] key2 = new int[8];
+        boolean flag = true;
+        do{
+            key1 = getKey(key, 1);
+            key2 = getKey(key, 2);
+            potentialCipher = simplifyDES(plain, key1, key2, true);
+            if(Arrays.toString(potentialCipher).equals(Arrays.toString(cipher))){
+                flag = false;
+            }else{
+                key = arrayPlus1(key);
+            }
+        }while(flag);
         return key;
     }
-
-    /*public static int[] invertSbox(int[] arr,int[][] box) {   
-        //Recibes un arreglo de enteros de 2 bits. Juntos forman un numero, 
-        // ej. 11 = 3 pero como sabes cual 3?
-        int[] result = new int[4];
-        return result;
-    }*/
 }
-
