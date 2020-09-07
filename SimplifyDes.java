@@ -6,7 +6,6 @@ public class SimplifyDes{
     public static int[][] box1 = new int[4][4];
     public static int[][] box2 = new int[4][4];
     public static void main(String[] args){
-        //public int[][] box1 = new int[4][4];
         box1[0][0] = 1;
         box1[0][1] = 0;
         box1[0][2] = 3;
@@ -289,3 +288,25 @@ public class SimplifyDes{
         return msgArray;
     }
 }
+
+/*
+public static void main(String[] args) {  
+    try {
+      File myObj = new File("Pairs1001100100.txt");
+      Scanner myReader = new Scanner(myObj);
+      String originalKey;  
+      while (myReader.hasNextLine()) {
+        String data = myReader.nextLine();
+        String[] pairs = new String[2];
+        pairs = data.split(",");
+        originalKey = getOriginal(pairs[0],pairs[1]);
+        //LO QUE SE TENGA QUE HACER
+      }
+      myReader.close();
+      System.out.println(originalKey);
+    } catch (FileNotFoundException e) {
+      System.out.println("An error occurred.");
+      e.printStackTrace();
+    } 
+  }  
+*/
